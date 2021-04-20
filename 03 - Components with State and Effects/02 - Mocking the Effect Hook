@@ -1,0 +1,12 @@
+// Import the module to be mocked
+import * as ris from "./randomImageService";
+
+// Tell Jest to mock the module
+jest.mock("./randomImageService");
+
+// Configure the mock behaviour
+ris.getRandomImageUrl.mockResolvedValue("http://foo.com/cat.jpg");
+
+ris.someOtherFunc.mockImplementation((a, b) => a + b);
+
+ris.someOtherFunc.mockReturnValue(7);
