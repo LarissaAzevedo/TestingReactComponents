@@ -1,0 +1,61 @@
+import React from "react";
+import { render, fireEvent, wait } from "@testing-library/react";
+import App from "./App";
+import { dateToSol } from "./services/sols";
+
+describe("App", () => {
+  describe("initial render", () => {
+    it("should select Sep 28 2019", () => {
+      const { queryByTestId } = render(App);
+      const dateLabel = queryByTestId("date-label");
+      const sliderInput = queryByTestId("date-slider");
+
+      expect(dateLabel).toBeDefined();
+      expect(dateLabel.textContent).toBe("2019-09-28");
+      expect(sliderInput).toBeDefined();
+      expect(dateLabel.value).toBe(dateToSol("2019-09-28").toString());
+    });
+  });
+
+  describe("selecting a pre-curiosity day and changing criteria", () => {
+    it("should show the correct number of images", async () => {
+      jest.setTimeout(10000);
+      const day = "2007-11-28";
+
+      const renderResults = render(App);
+      const dateLabel = renderResults.queryByTestId("date-label");
+      const sliderInput = renderResults.queryByTestId("date-slider");
+      const checkboxes = renderResults.queryByTestId("rover-selected");
+
+      fireEvent.change(sliderInput, {
+        target: { value: dateToSol(day).toString() },
+      });
+
+      await wait(() => {
+        expect(dateLabel.textContent).toBe(day);
+        expect(sliderInput.value).toBe(dateToSol(day).toString());
+
+        const images = renderResults.getByTestId("rover-image");
+        expect(images.length).toBe(8);
+      });
+
+      // deselect opportunity
+      fireEvent.change(checkboxes[1]);
+      await wait(() => {
+        const images = renderResults.getByTestId("rover-image");
+        expect(images.length).toBe(2);
+      });
+
+      // select navigation camera
+      const cameraSelect = renderResults.queryByTestId("camera-select");
+      fireEvent.change(cameraSelect, {
+        target: { value: "NAVCAM" },
+      });
+
+      await wait(() => {
+        const images = renderResults.getByTestId("rover-image");
+        expect(images.length).toBe(27);
+      });
+    });
+  });
+});

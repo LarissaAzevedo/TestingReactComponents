@@ -1,0 +1,20 @@
+import React from "react";
+import TestRenderer from "react-test-renderer";
+import RoverSelector from "./RoverSelector";
+import { rovers } from "../pages/ConnectRoverSearch";
+
+describe("RoverSelector", () => {
+  describe("should not change", () => {
+    const all = { spirit: true, opportunity: true, curiosity: true };
+    const tree = TestRenderer.create(
+      <RoverSelector
+        rovers={rovers}
+        roversActive={all}
+        roverSelection={all}
+        onRoverSelection={() => {}}
+      />
+    ).toJSON();
+    expect(tree).toMatchSnapshot(); //Snapshot file
+    expect(tree).toMatchInlineSnapshot(); //Snapshot Inline
+  });
+});
